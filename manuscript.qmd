@@ -1,5 +1,5 @@
 ---
-title: "Improving the Transparency of Power Analyses Through Standardized Reporting"
+title: "Improving the Transparency of Power Analyses Through standardised Reporting"
 author:
   - name: Cristian Mesquida
     orcid: 0000-0002-1542-8355
@@ -35,7 +35,7 @@ author:
     email: lisa.debruine@glasgow.ac.uk
     affiliations:
       - name: University of Glasgow
-        department: Institute of Neuroscience and Psychology
+        department: School of Psychology & Neuroscience
     roles:
      - conceptualization
      - methodology
@@ -60,6 +60,11 @@ execute:
   echo: false
 abstract: ""
 ---
+
+<!--
+Q: Is metacheck a COI?
+-->
+
 
 ```{r}
 #| label: setup
@@ -99,13 +104,17 @@ psych_science <- readRDS("data/psychsci.rds")
 
 ## Introduction
 
-An important step when designing a study is to justify the sample size that will be collected. The key aim of a sample size justification is to explain how the collected data is expected to provide valuable information given the inferential goals of the researcher [@lakens2022]. One common sample size justification when the inferential goal is to test a hypothesis is an *a priori* power analysis. An a priori power analysis makes explicit which effect size researchers are interested in detecting. This information is essential both when interpreting the informational value of a study, as when interpreting the test results. A study that has high power only for unrealistically large effect sizes is unlikely to contribute useful insights to the published literature. If a hypothesis test yields a non-significant result, the range of effect sizes that could have been detected with low error rates is made explicit by the power analysis, which provides important context to evaluate the test results. For these reasons, researchers need report all parameters used to compute the power analysis.
+An important step when designing a study is to justify the sample size that will be collected. The key aim of a sample size justification is to explain how the collected data is expected to provide valuable information given the inferential goals of the researcher [@lakens2022]. One common sample size justification when the inferential goal is to test a hypothesis is an *a priori* power analysis. An a priori power analysis makes explicit which effect size researchers are interested in detecting. This information is essential both when interpreting the informational value of a study, as when interpreting the test results. A study that has high power only for unrealistically large effect sizes is unlikely to contribute useful insights to the published literature. If a hypothesis test yields a non-significant result, the range of effect sizes that could have been detected with low error rates is made explicit by the power analysis, which provides important context to evaluate the test results. For these reasons, researchers need to report all parameters used to compute the power analysis.
 
 Despite the important role power analyses play in hypothesis testing research, there are no reporting guidelines for power analyses. Furthermore, when a priori, sensitivity, or compromise power analyses are reported, researchers often omit important information [@thibault_2024; @bakker_2020; @mesquida_2025]. For example, Bakker et al [-@bakker_2020] investigated the transparency and reproducibility of power analyses reported in 210 preregistrations submitted to the Open Science Framework and institutional review boards proposals. In 52 (30%) of the reported power analyses, the effect size metric was not specified and in 26 (15%) the effect size magnitude was not specified. Only 34 (20%) power analyses provided enough information to reproduce the power analysis and only 62% of these power analyses pertained to the main hypothesis test in the pre-registration.
 
-Similarly, Thibault et al [-@thibault_2024] assessed the transparency and reproducibility of 95 power analyses reported in published articles. They could only reproduce 2 (2%) without making any assumptions and could likely reproduce another 27 (28%) after making assumptions. For 46 (48%) power analyses, they could not determine whether the power analysis was for a statistical test that appeared in the results section of the publication (48%; 46/95). Another recurring issue was that power analyses are often based on default options offered by G\*Power (i.e., assuming a medium effect size, $\alpha$ = .05 and a power of .80).
+Similarly, Thibault et al [-@thibault_2024] assessed the transparency and reproducibility of 95 power analyses reported in published articles. They could only reproduce 2 (2%) without making any assumptions and could likely reproduce another 27 (28%) after making assumptions. For 46 (48%) power analyses, they could not determine whether the power analysis was for a statistical test that appeared in the results section of the publication. Another recurring issue was that power analyses are often based on default options offered by G\*Power (i.e., assuming a medium effect size, $\alpha$ = .05 and a power of .80) that may not be relevant to the analysis.
 
 Finally, researchers often fail to justify the assumed effect size. For example, Mesquida et al [-@mesquida_2025] reported that in a sample of 144 articles reporting an a priori power analysis, 48 (33%) did not justify the selected effect size. This lack of transparency prevents editors, reviewers, and readers from being able to reproduce power analyses but also critically evaluate their validity.
+
+<!--
+Maybe give some examples of justifications used?
+-->
 
 ```{r}
 #| label: res_power
@@ -143,9 +152,31 @@ power_type <- res_power$table |>
     )
 ```
 
-### Metacheck power module
+<!-- 
+Before we introduce a module to tell you to report all the essential parts of a power analysis, I think we need to briefly introduce what those parts are
+-->
 
-One way to improve the reporting of power analysis is by developing tools that perform automated checks and provide feedback to researchers about how to improve their reporting. The `power` module is one such tool that is part of Metacheck \[ADD REF\]. extracting parameters of a power analysis from unstructured scientific text is challenging because the same information can be phrased in many different ways. Consequently, deterministic rule-based approaches fail to identify parameter information that is present but expressed in an unexpected way. To address this limitation the `power` module can optionally use an LLM to interpret flexible human language.
+### Complete reporting
+
+The report of a power analysis must contain several components in order to be interpretable and reproducible. 
+
+The type of power analysis should be clear: is it calculating power from sample and effect sizes, sample size from desired power and effect size, or the smallest effect size detectable at a specific power and sample size? Is it an a priori analysis used to determine sample size before data collection for planning, or a sensitivity analysis used after data collection to help interpret findings?
+
+The reader must be able to determine exactly which result the power analysis corresponds to, and which effect if the model estimates more than one effect. The assumed parameters of the statistical test must be clear. For example, specifying Student's vs Welch's t-test or the variance components of a linear mixed effects model. Also include the criteria used to determine significance (e.g., the critical alpha and any corrections applied).
+
+The effect size should be specified with a clear metric (e.g., 0.5 Cohen's d, not "medium") and justified if it is not the output of the power analysis. 
+
+The total sample size should be reported explicitly, and where applicable, the sample size per group. 
+
+The power should be reported explicitly, and not assumed to be a default. 
+
+Finally, the software used to calculate power should be cited, including the version, add-on packages used, and ideally with reference to supplemental materials that contain the exact code or specifications if this is too complex to include in the text. 
+
+### Automated checks
+
+One way to improve the reporting of power analyses is by developing tools that perform automated checks and provide feedback to researchers about how to improve their reporting. Metacheck \[ADD REF\], a suite of tools for checking research outputs for best practices, has one such tool in the built-in `power` module. This module identifies paragraphs that are likely to contain a power analysis using text-matching and returns the paragraphs along with advice on the components of a complete power analysis in a report.
+
+Extracting parameters of a power analysis from unstructured scientific text is challenging because the same information can be phrased in many different ways. Consequently, deterministic rule-based approaches fail to identify parameter information that is present but expressed in an unexpected way. To address this limitation, the `power` module can optionally use an LLM to interpret flexible human language and provide even more targeted advice.
 
 ```{r}
 #| label: llm_power
@@ -175,7 +206,7 @@ load("data/res_power_llm.RData")
 n_power_analyses <- nrow(res_power_llm$table)
 ```
 
-To illustrate this approach, we applied the LLM-version of `power` module to a sample of `r length(psych_science)` open-access articles from *Psychological Science*. @tbl-power_llm shows the proportion of missing components from `r n_power_analyses` power analyses. Although the LLM-based approach can identify information expressed in a wider range of ways than rule-based methods, some parameters remain missing because they were not reported or could not be reliably extracted from the text.
+To illustrate this approach, we applied the LLM-version of the `power` module to a sample of `r length(psych_science)` open-access articles from *Psychological Science*. @tbl-power_llm shows the proportion of missing components from `r n_power_analyses` power analyses. Although the LLM-based approach can identify information expressed in a wider range of ways than rule-based methods, some parameters remain missing because they were not reported or could not be reliably extracted from the text.
 
 <!--#  Below we show the prevalence of missing information using the LLM. This was already reported in the Metacheck paper. Instead of reporting the same information twice perhaps we can show an example of poorly reported power analysis?-->
 
@@ -239,7 +270,21 @@ tbl_power_llm <- res_power_llm$table |>
   mutate(pcnt = sprintf("%d%%", round(pcnt*100)))
 
 # Display the table
+comp_ord <- c("power_type", 
+              "statistical_test_combined",
+              "alpha_level",
+              "effect_size", 
+              "effect_size_metric_combined",
+              "sample_size", 
+              "power", 
+              "software_combined")
 tbl_power_llm |> 
+  mutate(Component = factor(Component, comp_ord)) |>
+  arrange(Component) |>
+  mutate(
+    Component = gsub("_combined", "", Component),
+    Component = gsub("_", " ", Component)
+  ) |>
   flextable() |>
   align(
     align = "right", 
@@ -256,13 +301,13 @@ tbl_power_llm |>
     )
 ```
 
-Although LLMs provide a flexible way to parse natural language variation, they treat the symptoms of inconsistent reporting rather than its root cause. When information is inherently ambiguous or incomplete, an LLM may misclassify a power analysis or extract incorrect parameters. Moreover, using LLMs for routine information-extraction tasks incurs substantial computational and energy costs. A preferable long-term solution is to reduce the need for LLM-based approaches by making scientific text easier to extract in the first place. This goal is best achieved through standardized reporting conventions.
+Although LLMs provide a flexible way to parse natural language variation, they treat the symptoms of inconsistent reporting rather than its root cause. When information is inherently ambiguous or incomplete, an LLM may misclassify a power analysis or extract incorrect parameters. Moreover, using LLMs for routine information-extraction tasks incurs substantial computational and energy costs. A preferable long-term solution is to reduce the need for LLM-based approaches by making scientific text easier to extract in the first place. This goal is best achieved through standardised reporting conventions.
 
-To improve the way power analyses are reported in the scientific literature, we propose a two-step solution. First, standardised reporting guidelines need to be developed that provide clear and universal guidance on how to transparently and completely report power analyses. Importantly, these guidelines should be structured in a machine-readable format, so that reporting standards can be consistently interpreted and applied by automated tools without relying on large language models to interpret the information. Second, we formalise these reporting guidelines in a structured schema that specifies the information that should be reported for each component of a power analysis. This schema will be used in the Metacheck power module to validate the information reported in power analysis statements. This will facilitate the identification of missing or incorrectly reported information and provide researchers with guidance on best reporting practices.
+To improve the way power analyses are reported in the scientific literature, we propose a two-step solution. First, we will develop standardised reporting guidelines that provide clear and universal guidance on how to transparently and completely report power analyses. <!-- Is machine-readability a property of this first goal or the second? --> Importantly, these guidelines will be structured in a machine-readable format, so that reporting standards can be consistently interpreted and applied by automated tools without relying on large language models to interpret the information. Second, we will formalise these reporting guidelines in a structured schema that specifies the information that should be reported for each component of a power analysis. This schema will be used in the Metacheck power module to validate the information reported in power analysis statements. This will facilitate the identification of missing or incorrectly reported information and provide researchers with guidance on best reporting practices.
 
-### Reporting Guidelines for Power Analyses
+### Reporting guidelines
 
-One reason why power analyses lack key information is the absence of specific reporting guidelines that editors, reviewers, and researchers can follow. For example, the American Psychological Association's (APA) *Journal Article Reporting Standards* (JARS) provides reporting standards for several aspects of scientific articles [@appelbaum2018], such as p-values and confidence intervals, but it provides no guidance on how to report power analyses. Furthermore, JARS reporting guidelines specify *what* information to report, but rarely provide detailed information about *how* the information should be presented. For example, JARS for quantitative articles state that researchers should describe the "power analysis, or methods used to determine precision of parameter estimates" but does not specify how this information should be reported. Given the importance of power analyses for the evaluation of research findings, a reporting standard that specifies both the required information and a consistent structure for how this information should be presented could substantially improve current research practices.
+One reason power analyses lack key information is the absence of specific reporting guidelines that editors, reviewers, and researchers can follow. For example, the American Psychological Association's (APA) *Journal Article Reporting Standards* (JARS) provides reporting standards for several aspects of scientific articles [@appelbaum2018], such as p-values and confidence intervals, but it provides no guidance on how to report power analyses. Furthermore, JARS reporting guidelines specify *what* information to report, but rarely provide detailed information about *how* the information should be presented. For example, JARS for quantitative articles state that researchers should describe the "power analysis, or methods used to determine precision of parameter estimates" but does not specify how this information should be reported. Given the importance of power analyses for the evaluation of research findings, a reporting standard that specifies both the required information and a consistent structure for how this information should be presented could substantially improve current research practices.
 
 ```{r f_test_example}
 f_statistic <- 15.23
@@ -286,19 +331,33 @@ p_value <- pf(
   )
 ```
 
-A useful precedent exists in the standardized reporting of statistical tests following APA guidelines. Researchers are familiar with reporting statistical tests such as *t*-tests and *F*-tests in a consistent order that includes the test statistic, degrees of freedom, *p*-value, effect size, and its confidence interval. For example, an *F*-test may be reported as *F*(`r numerator_df`, `r denominator_df`) = `r f_statistic`, *p* \< .001, $\eta_p^2$ = `r round(f_test$Eta2_partial, 2)` 90% CI \[`r round(f_test$CI_low, 2)`; `r round(f_test$CI_high, 2)`\]. These standardized reporting convention allows readers to quickly identify and interpret the information they convey. At the same time, standardized reporting practices have the important benefit that they enable automated extraction of tests, which is used by tools such as Statcheck to reliably parse statistical tests and verify reported *p*-values [@nuijten_2015].
+A useful precedent exists in the standardised reporting of statistical tests following APA guidelines. Researchers are familiar with reporting statistical tests such as *t*-tests and *F*-tests in a consistent order that includes the test statistic, degrees of freedom, *p*-value, effect size, and its confidence interval. For example, an *F*-test may be reported as *F*(`r numerator_df`, `r denominator_df`) = `r f_statistic`, *p* \< .001, $\eta_p^2$ = `r round(f_test$Eta2_partial, 2)` 90% CI \[`r round(f_test$CI_low, 2)`; `r round(f_test$CI_high, 2)`\]. These standardised reporting convention allows readers to quickly identify and interpret the information they convey. At the same time, standardised reporting practices have the important benefit that they enable automated extraction of tests, which is used by tools such as Statcheck to reliably parse statistical tests and verify reported *p*-values [@nuijten_2015].
 
-The same approach can be applied to power analyses. The standardized reporting of power analysis should ensure that information is interpretable by human readers but also structured in a way that automated tools like Metacheck can extract using deterministic approaches (e.g., regular expressions). The extracted information can then be used to populate a JSON object, which can be validated against the JSON Schema to ensure that all required fields are present and that reported values conform to the specified constraints.
+The same approach can be applied to power analyses. The standardised reporting of power analyses should ensure that information is interpretable by human readers but also structured in a way that automated tools like Metacheck can extract using deterministic approaches (e.g., regular expressions). The extracted information can then be put in a structured format, which can be validated against a schema to ensure that all required fields are present and that reported values conform to the specified constraints. <!-- I made this more generic because JSON is jargon-y and not the only possibility, just a standard we like -->
 
-The first step is to determine what information should be reported and how it should be reported. A fully reported power analysis requires an identifier (as there are often multiple power analyses in a paper), the type of power analysis (i.e., a priori, sensitivity, compromise, post-hoc), exact details about the statistical test that the power analysis is performed for, details about the effect that the power analysis aim to detect, and the Type 1 and Type 2 error rates used in the calculation. As different software packages can give slightly different results, the software used to compute power should be reported as well. Combining these properties in our proposed standard report for power analyses would leave to a sentence such as:
+The first step is to determine how the essential information should be reported. As explained above, a fully reported power analysis requires the type of power analysis, relevant details of the statistical test, the effect size specified with a clear metric and justification, the sample size, power, and the software used. Combining these properties in our proposed standard report for power analyses would lead to a sentence such as:
 
-> An a priori power analysis in G\*Power for a 2 x 2 within-subject F-test for an interaction effect, assuming a within-participant r = 0.5, to detect f = 0.12, based on the previously published study by Someone et al., (2025), with a desired power of 0.90 and an alpha of 0.05, returned a sample size of 186 observations.
+> We determined sample size using G\*Power 3.1.9.6 (Mac) for the interaction effect of a 2 x 2 within-subject F-test, assuming a within-participant r = 0.5 and using a critical alpha of 0.05. The effect size of interest was f = 0.12, based on the previously published study by Someone et al., (2025). With a desired power of 0.90, this returned a sample size of 186 observations.
 
 Alternatively, and just as statistical tests are abbreviated instead of communicated in prose, one could write:
 
-> A power analysis (a priori, G\*Power, F-test, 2w\*2w, interaction effect, r = 0.5, f = 0.12, previous study (Someone et al., 2025), Type 1 = 0.05, power = 0.80, www.figshare.com/screenshot_of_gpower) indicated that 186 observations should be collected.
+> A power analysis (sample size; F-test, 2w\*2w, interaction effect, r = 0.5, critical alpha = 0.05; effect size: f = 0.12, previous study (Someone et al., 2025); sample size: N = 186; power = 0.80; G\*Power, 3.1.9.6 (Mac), www.figshare.com/screenshot_of_gpower) indicated that 186 observations should be collected.
 
-Generically, the format for an a priori power analysis is ordered as follows: Type of power analysis, software, test family, test parameters, effect size, effect size justification, alpha level, desired power, link to reproducible file. For other types of power analyses the achieved sample size is added, and the computed variables are moved to the end of the statement. For example, a sensitivity power analysis based on a simulation in R would be reported as:
+<!-- I hate Type 1 and Type 2 as labels. They're just not descriptive and too confusable. Also, I've come to the conclusion that critical alpha is part of the test details. We should discuss this. -->
+
+<!--
+I think we should separate components by ;, and within complex components like test assumptions, elements of that by , 
+-->
+
+<!--
+Reorganise everything in the paper to follow the order when discussing components.
+
+I've changed it so that software goes at the end and is combined in an element with software name, version, citation, link to file
+
+e.g., pwr package, version 1.3-0, (Champely, 2020), osf.io/abcde
+-->
+
+Generically, the format is ordered as follows: Type of power analysis, test details, effect size, sample size, power, software. For other types of power analyses the achieved sample size is added, and the computed variables are moved to the end of the statement. For example, a sensitivity power analysis based on a simulation in R would be reported as:
 
 > A power analysis (sensitivity, R, t-test, two-sample, N = 90 (45 per group), Type 1 = 0.05, Type 2 = 0.10, www.data_repository.org/link_to_simulation_script) indicates that effects of d = 0.69 could be detected with the desired 90% power.
 
@@ -306,7 +365,12 @@ Generically, the format for an a priori power analysis is ordered as follows: Ty
 
 <!--#  LISA, this is what I had in mind as a reporting standard. One of the goals, in my mind, is to make the information sufficiently structured that it can be extracted and interpreted without relying on LLMs.                                                                           power_analysis: id = 01; type = a priori; family_test = F-test; type_test = 2w2w; test_parameters.within_subject_correlation = 0.50; type_effect = interaction; effect_size.metric = f; effect_size.magnitude = 0.12; effect_size_justification.method = previous study; effect_size_justification.reference = https://doi.org/example/251524592097094; sample_size.total = 186; alpha.level = 0.05; power = 0.90; software.name = G*Power, software.file_location = https://EXAMPLE".                                                                            Perhaps we could develop a Shiny app in which researchers fill out these fields, and the app then generates the structured reporting standard above as output. This would make the reporting process easier for researchers while also ensuring that the resulting information follows a consistent, machine-readable format.-->
 
-## A Structured Schema for Power Analyses
+
+<!--
+I love this as a start, but the test specification will quickly grow out of control for more complex analyses. Let's start by trying to code 10 analyses from the psychsci set.
+-->
+
+## Structured schema
 
 To formalize these reporting requirements and facilitate power analyses to be machine-readable, we have developed a JSON schema that defines the parameters to be reported. The schema contains the data types, permitted values, and any relationships or conditional requirements between characteristics of a reported power analysis. The JSON schema serves as a formal machine-readable specification of the reporting standard. Researchers are not expected to report power analyses in this format, but to report power analyses clearly enough such that software can parse their writing, and add it to a schema automatically (and without the use of large language models). An example of the full .JSON file is presented below, and is followed by a detailed explanation of each aspect of a power analysis that should be provided for full reporting.
 
@@ -348,7 +412,8 @@ Box 1: Example JSON representation of a complete power analysis object.
 
 We propose that each power analysis should be assigned a unique identifier. This identifier creates an explicit link between the research question, the statistical test used to address it, and the corresponding power analysis. Power analyses are often reported with insufficient detail to determine which hypothesis or statistical test they were intended to support [@thibault_2024; @bakker_2020; @mesquida_2025] .
 
-This issue is particularly relevant in studies that include multiple hypotheses or multiple statistical tests. Assigning a unique identifier to each power analysis establishes these relationships and determine whether each planned analysis is supported by an appropriate power analysis. Such links could facilitate automated checks of whether all primary analyses have a corresponding power analysis and whether multiple power analyses refer to the same planned analysis. The `id` field should contain a unique identifier that allows the power analysis to be linked to the corresponding hypothesis and statistical test. Whee researchers often list and number hypothesis (e.g., H1, H2, H3), it should be just as normal to list multiple power analyses, as each hypothesis corresponds to a unique test, with it's own statistical power for an effect size of interest.
+This issue is particularly relevant in studies that include multiple hypotheses or multiple statistical tests. Assigning a unique identifier to each power analysis establishes these relationships and determines whether each planned analysis is supported by an appropriate power analysis. Combined with statistical tests also in a machine-readable format [@lakens_2021], such links could facilitate automated checks of whether all primary analyses have a corresponding power analysis. The `id` field should contain a unique identifier that allows the power analysis to be linked to the corresponding hypothesis and statistical test. Where researchers often list and number hypothesis (e.g., H1, H2, H3), it should be just as normal to list multiple power analyses, as each hypothesis corresponds to a unique test <!-- does it? in practice, somethings multiple hypotheses are tested with the same or overlapping tests, and multiple tests correspond to one hypothesis. This is usually poor practice, so making it more explicit here can help. --> , with its own statistical power for an effect size of interest.
+
 
 Box 3.1: JSON Schema representation of the `id` property.
 
@@ -363,24 +428,43 @@ Box 3.1: JSON Schema representation of the `id` property.
 
 ### Type of power analysis
 
+<!-- 
+I kind of hate this terminology. It's more clear to say what was calculated. And possibly whether this happened before or after data collection.
+
+I'd like to redo this terminology, and categorise power analyses based on what they calculate (power, effect size, or sample size) and the effect size justification takes care of the rest (if it's observed ES, then it's an observed power analysis)
+-->
+
+There are three types of power analyses. One can calculate power from sample and effect sizes, sample size from desired power and effect size, or the smallest effect size detectable at a specific power and sample size, all given specific test parameters. 
+
+Specific terminology around power analyses can be complex and confusing. An *a priori* power analysis calculates sample size before data collection, given desired power, a target effect size, and specific test parameters. A *compromise* power analysis calculates power from sample size and effect size, varying the alpha criterion or other decision criteria to balance Type 1 and Type 2 error rates. A *sensitivity* power analysis calculates the smallest effect size that can be detected with desired power given a sample size and test parameters. 
+
+<!--
+
 There are three types of power analyses. First, an *a priori* power analysis calculates the sample size required to detect an effect of interest, and is conducted before data collection. Second, researchers can perform a compromise power analysis where they compute the desired Type 1 and Type 2 error rates, given the sample size, and the effect size of interest. Third, a sensitivity analysis calculates the effect size that can be detected with desired statistical power given the available sample size, statistical test, and significance level. We refer to this as an effect-size sensitivity analysis to distinguish it from other form of sensitivity analysis.
 
-After data collection, researchers may also calculate the hypothetical power of a study design based on the final sample size an assumed effect size of interest. This provides information about the sensitivity of the study design given the sample size and can be understood as the post-data-collection counterpart of an *a priori* power analysis. However, the term *post hoc power analysis* is frequently used ambiguously. It may refer to calculating power based on a the final sample size and hypothetical effect size of interest, which provides information about the sensitivity of the study design. Alternatively, it may refer to calculating power using the effect size observed in the data, which provides no additional information beyond the *p*-value [@yuan_2005; @lakens2022]. Researchers have therefore recommended avoiding calculating the power based on observed effect size [@yuan_2005; @okeefe_2007].
+-->
 
-There is currently no established term for calculating power after data collection based on a final sample size and hypothetical effect size of interest. We propose *power sensitivity analysis* for calculating the power of a statistical test given a hypothetical effect size of interest, and *observed power analysis* for calculating power using the effect size observed in the data. Observed power analysis should be avoided because it provides no information beyonf the $p$-value [@yuan_2005; @lakens2022].
+After data collection, researchers may also calculate the hypothetical power of a study design based on the final sample size and an assumed effect size of interest, often termed a *post hoc* power analysis. This provides information about the sensitivity of the study design given the sample size and can be understood as the post-data-collection counterpart of an *a priori* power analysis. However, the term *post hoc* power analysis is frequently used ambiguously. It may alternatively refer to calculating power using the effect size observed in the data, which provides no additional information beyond the *p*-value [@yuan_2005; @lakens2022]. Researchers have therefore recommended avoiding calculating power based on observed effect size [@yuan_2005; @okeefe_2007; @lakens2022]. 
+
+For clarity, we propose using *effect size sensitivity* for calculating the smallest effect size that can be detected with desired power, *power sensitivity* for calculating power given a hypothetical effect size of interest, and *observed power* for calculating power using the effect size observed in the data.
+
+<!--
+There is currently no established term for calculating power after data collection based on a final sample size and hypothetical effect size of interest. We propose *power sensitivity analysis* for calculating the power of a statistical test given a hypothetical effect size of interest, and *observed power analysis* for calculating power using the effect size observed in the data. Observed power analysis should be avoided because it provides no information beyond the $p$-value [@yuan_2005; @lakens2022].
+-->
+
+Due to the confusion around terminology, we propose a straightforward classification of power analyses based on what is being calculated: power, sample size, or effect size. Further distinctions between power sensitivity and observed power analysis can be determined by looking at the effect size justification (detailed in the net section).
+
 
 Box 4.1: JSON Schema representation of the `type` property.
 
 ``` json
 "type": {
       "type": "string",
-      "description": "The type of power analysis conducted.",
+      "description": "The parameter calculated by the power analysis.",
       "enum": [
-        "a priori", 
-        "effect size sensitivity", 
-        "power sensitivity",
-        "observed power",
-        "comprimise"
+        "power",
+        "sample_size",
+        "effect_size
       ]
     }
 ```
@@ -389,13 +473,18 @@ Box 4.1: JSON Schema representation of the `type` property.
 
 <!--# Indeed - I would make all labels connected a_priori - DL. -->
 
-### Test Family and Test Type
+### Test parameters
 
-Researchers should provide both general information about the family the test that power is computed for belongs to (e.g., a correlation, *t*-test, or *F*-test) as more specific information about the type, design, or configuration of that test. In essence, this aspect of the power analysis contains all information that would be specified in a power analysis about the statistical test that is performed. For example, for a *t*-test, power analysis software such as G\*Power would require users to specify the type of *t*-test (one-sample, two-sample, or paired-sample).
+Researchers should provide both general information about the family the test that power is computed for belongs to (e.g., a correlation, *t*-test, or *F*-test) and any further test parameters that will affect the power analysis. For example, for a *t*-test, power analysis software such as G\*Power would require users to specify the type of *t*-test (one-sample, two-sample, or paired-sample). <!--If you expect unequal variance and unequal sample size in a two-sample design and plan to use a Welch's t-test to account for this, you can use simulation to plan sample size, but then must also specify the mean and SD used for each group. -->
 
-For *F*-tests, researchers should specify the factorial structure (for example using notation such as 2w, 2b, or 2b\*2w, where the number indicates the number of levels and the letters indicate within-subject (w) or between-subject (b) factors) and the which main effect or interaction the power analysis is for. The effect of interest should be specified because a statistical test does not always unambiguously identify the specific effect for which a power analysis was conducted. For simple designs, such as a *t*-test, the effect of interest typically corresponds directly to the comparison being tested. However, in factorial designs, researchers may be interested in different effects, including main effects, interactions, planned contrasts, or simple effects. Specifying the type of effect clarifies which hypothesis the power analysis was designed to evaluate and allows readers to determine whether the power analysis corresponds to the intended research question.
+For *F*-tests, researchers should specify the factorial structure (for example using notation such as 2w, 2b, or 2b\*2w, where the number indicates the number of levels and the letters indicate within-subject (w) or between-subject (b) factors) and which effect the power analysis is for. The effect of interest must be specified because a statistical test does not always unambiguously identify the specific effect for which a power analysis was conducted. For simple designs, such as a *t*-test, the effect of interest typically corresponds directly to the comparison being tested. However, in factorial designs, researchers may be interested in different effects, including main effects, interactions, planned contrasts, or simple effects. Specifying the type of effect clarifies which hypothesis the power analysis was designed to evaluate and allows readers to determine whether the power analysis corresponds to the intended research question. <!-- I feel like this shouldn't be the way we determine the match with a hypothesis! Tests should explicitly link to hypotheses (we argue in lakens_2021) and then power analyses explicitly link to test-effect or to hypotheses? In the MRHT paper, we create decision criteria for integrating the results of 1 or more tests to support, refute, or not-support a specific hypothesis -- that is the target of a power analysis. Which only corresponds to 1 effect in 1 test for simple things. -->
 
-Some statistical tests require additional parameters to fully specify the power analysis. These test parameters depend on the test family and the design configuration. Test assumptions (e.g., the homogeneity of variances assumption that differentiates Student's *t*-test from Welch's *t*-test, or a Greenhouse Geisser correction for an *f*-test) are one example of test parameters. For correlations and *t*-tests the directionality of the hypothesis should be reported using the tail parameter. For within-subject *F*-tests the correlation between repeated measurements should be reported. This correlation represents the expected association between repeated observations and influences the variance estimate used in the power calculation. In complex designs, this would require specifying a correlation matrix. The more complex a test is, the more details of a test need to be specified, up to a point where it might be easier to share the code for the power analysis than to describe all details of the test verbally.
+Some statistical tests require additional parameters to fully specify the power analysis. These test parameters depend on the test family and the design configuration. Test assumptions (e.g., the homogeneity of variances assumption that differentiates Student's *t*-test from Welch's *t*-test, or a Greenhouse Geisser correction for an *f*-test) are one example of test parameters. For correlations and *t*-tests, the directionality of the hypothesis should be reported using the tail parameter. For within-subject *F*-tests, the correlation between repeated measurements should be reported. This correlation represents the expected association between repeated observations and influences the variance estimate used in the power calculation. In complex designs, this would require specifying a correlation matrix. The more complex a test is, the more details of a test need to be specified, up to a point where it might be easier to share the code for the power analysis than to describe all details of the test verbally.
+
+<!--
+Schema for representing parameters of specific tests are beyond our current paper, but see ...
+Is there a current schema for tests? We should use and reference that and suggest it can be extended by disciplinary specialists. But also make the point that the more parameters that need to be assumed, the less informative a power analysis is likely to be. And all these parameters need a justification, the same as the effect size (and alpha?)
+-->
 
 Box 5.1: JSON Schema representation of the `family_test` property.
 
@@ -462,67 +551,83 @@ Box 8.1: JSON Schema representation of the `type_effect` property.
     }
 ```
 
+Another important test parameter is the critical alpha. Although 0.05 is commonly used as a default alpha level in hypothesis tests, the alpha level should be reported because it determines the threshold for statistical significance and directly affects the power of a test. Reporting the alpha level also allows peers to evaluate whether it matches the alpha level used in the study. For example, a study may adjust the alpha level to account for multiple comparisons in the results section, but use a different alpha level in the power analysis. As corrections for multiple comparisons lower the alpha level, the also lower the statistical power of the test. To facilitate machine readability and automated extraction, the alpha level should be reported as a numeric value between 0 and 1 (e.g., 0.05 rather than 5%). The justification property allows researchers to provide a justification explaining the rationale for this choice [@lakens_justify_2018], such as adjustments for multiple comparisons. \[**Nice - should we say the same for power? Also justify it?**\]
+
+Box 13.1: JSON Schema representation of the `alpha` property.
+
+``` json
+ "alpha": {
+  "type": "object",
+  "description": "Type I error rate selected for the statistical test.",
+  "additionalProperties": false,
+  "properties": {
+    "value": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Type I error rate selected for the analysis."
+    },
+    "justification": {
+      "type": "string",
+      "description": "Explanation of the rationale for selecting the alpha level. For example, researchers may adjust the alpha level to account for multiple comparisons."
+    }
+  },
+  "required": [
+    "value"
+  ]
+}
+```
+
+Box 13.2: Example JSON representation of the `alpha` property.
+
+
+<!-- 
+Should test have subsections for family, parameters, and alpha?
+
+Should alpha be expanded to include combination decision criteria, like the AB interaction must be p < .05 *and* directionally A1 !> B1, B1 !> B2, A1 < A2, A2 > B2
+
+We can reference the MRHT paper for examples of this.
+-->
+
 ### Effect size
 
-The effect size metric (e.g., Cohen's $d$, $r$, or odds ratio) and magnitude (e.g., 0.5, 1.3) used in the power analysis should be reported. However, a common issue in the reporting of power analyses is that neither the effect size metric nor its magnitude are reported [@thibault_2024; @bakker_2020; @mesquida_2025]. Reporting only the numerical value (e.g., and effect size of 0.1) is insufficient because the same value can represent different quantities depending on the metric used. For example, an effect size of 0.1 could refer to Cohen's $d$, Cohen's $f$, or $\eta_p^2$ ). Reporting the metric allows readers to determine whether the assumed effect size corresponds to the effect of interest, and increases the reproducibility of the power analysis. Reporting the magnitude allows readers to evaluate whether the assumed effect size is plausible, justified, and appropriate for the research question.
+The effect size metric (e.g., Cohen's $d$, $r$, or odds ratio) and magnitude (e.g., 0.5, 1.3) used in the power analysis should be reported. However, a common issue in the reporting of power analyses is that neither the effect size metric nor its magnitude are reported [@thibault_2024; @bakker_2020; @mesquida_2025]. Reporting only the numerical value (e.g., an effect size of 0.1) is insufficient because the same value can represent different quantities depending on the metric used. For example, an effect size of 0.1 could refer to Cohen's $d$, Cohen's $f$, or $\eta_p^2$ ). Reporting the metric allows readers to determine whether the assumed effect size corresponds to the effect of interest, and increases the reproducibility of the power analysis. Reporting the exact magnitude, rather than t-shirt sized like "small", "medium", or "large", allows readers to evaluate whether the assumed effect size is plausible, justified, and appropriate for the research question.
 
-Reporting the metric may not always be sufficient trace back what it was based on. Researchers may convert the effect size they use in a power analysis from an effect size reported in another metric, calculate an effect size from summary statistics, or combine multiple effect sizes in the literature to obtain the value used in the power analysis. For example, researchers may combine information from multiple studies by averaging reported effect sizes, apply bias-adjustment methods to an effect size reported in a previous study or meta-analysis. Although this recommendation goes beyond simply reporting the power analysis, it is essential information to be able to evaluate the validity of a power analysis. Researchers should transparently report how the effect size used in the power analysis was obtained or calculated. For example, if an effect size was converted from another metric, researchers should report the original metric and the conversion formula used. If the effect size was calculated by the researchers, the calculation procedure should be described. This information allows readers to evaluate the assumptions underlying the selected effect size and improves the reproducibility of the power analysis.
+Reporting the metric may not always be sufficient trace back what it was based on. Researchers may convert the effect size they use in a power analysis from an effect size reported in another metric, calculate an effect size from summary statistics, or combine multiple effect sizes in the literature to obtain the value used in the power analysis. For example, researchers may combine information from multiple studies by averaging reported effect sizes, or apply bias-adjustment methods to an effect size reported in a previous study or meta-analysis. Although this recommendation goes beyond simply reporting the power analysis, it is essential information to be able to evaluate the validity of a power analysis. Researchers should transparently report how the effect size used in the power analysis was obtained or calculated. For example, if an effect size was converted from another metric, researchers should report the original metric and the conversion formula used. If the effect size was calculated by the researchers, the calculation procedure should be described. This information allows readers to evaluate the assumptions underlying the selected effect size and improves the reproducibility of the power analysis.
 
 Box 9.1: JSON Schema representation of the `effect_size` property.
 
-<!--# We could also create another property to specify how the effect size was estimated where researchers can include means and standard deviations. Should we alos allow spceify the type of effect size beyond the family? For instance, Cohen's ds or drm. -->
+<!--# We could also create another property to specify how the effect size was estimated where researchers can include means and standard deviations. Should we also allow specify the type of effect size beyond the family? For instance, Cohen's ds or drm. -->
+
+<!-- I've combined the justification into this effect size object. I thik we should create a specific justification object that can be imported as part of any parameter that needs justification.
+-->
 
 ``` json
- "effect_size": {
-      "type": "object",
-      "description": "The metric and magnitude of the effect size used in the power analysis.",
-      "additionalProperties": false,
-      "properties": {
-        "metric": {
-          "type": "string",
-          "enum": [
-            "d", 
-            "g", 
-            "f", 
-            "r", 
-            "β"
-            ]
-        },
-        "magnitude": {
-          "type": "number"
-        },
-        "description": {
-          "type": "string",
-          "description": "Additional information about how the effect size was obtained. If the effect size was converted from another metric, report the conversion formula used and its reference."
-    }
-      },
-      "required": [
-        "metric",
-        "magnitude"
-      ]
-    }
-```
-
-### Effect Size Justification
-
-There are six common approaches that researchers use to justify the effect size of interest in a power analysis: effect sizes from previous studies, meta-analyses, pilot studies, Cohen's *d* thresholds, field-specific thresholds, and the smallest effect size of interest (SESOI) [@lakens2022]. Reporting this information again goes beyond the statistical properties of a power analysis, but is essential when evaluate whether the sample size justification is valid. We therefore think that in addition to reporting how the effect size was determined, researchers should provide a justification for why this effect size was used in the power analysis.
-
-This information is especially important to be able to detect common problems with the choice of an effect size of interest in a priori power analyses. When effect sizes are derived from previous studies or meta-analyses, researchers should explain that the effect is sufficiently similar to the planned study, as studies might differ in the population, study design, manipulation, intervention, or even outcome measures. Furthermore, researchers should reflect on the (possibly large) uncertainty in the effect size estimate of the original study. This is also true if the effect size comes from a pilot study that the researchers performed themselves.
-
-Instead of using an empirically observed effect size for the power analysis, researchers may rely on Cohen's *d* thresholds for small, medium, and large effects, or field-specific benchmarks. This practice can be problematic because it uses general benchmarks to design a specific study that is likely not similar to the general study in a field. Consequently, choosing an effect size solely on the basis of Cohen's *d* thresholds or other field-specific benchmarks may overlook the contextual factors that determine whether the effect size is appropriate for the planned study [@primbs_2022].
-
-A better approach is to justify the effect size based on a smallest effect size of interest (SESOI), which specifies the effect a researcher does not want to miss, either because it is considered theoretically or practically meaningful for the research question. Regardless of the justification for the effect size is used to compute power, it should not simply be stated, but researchers should justify why it is a relevant effect size to design the study around.
-
-Box 10.1: JSON Schema representation of the `effect_size_justification` property.
-
-``` json
-"effect_size_justification": {
+"effect_size": {
   "type": "object",
-  "description": "Justification for the effect size estimate used in the power analysis.",
+  "description": "The metric and magnitude of the effect size used in the power analysis.",
   "additionalProperties": false,
   "properties": {
-    "method": {
+    "metric": {
       "type": "string",
+      "enum": [
+        "d", 
+        "g", 
+        "f", 
+        "r", 
+        "β"
+      ]
+    },
+    "magnitude": {
+      "type": "number"
+    },
+    "description": {
+      "type": "string",
+      "description": "Additional information about how the effect size was obtained. For example, average effect sizes from multiple studies, use a bias-adjusted effect size or estimate an interaction effect from a independent two-group study design. If the effect size was converted from another metric, report the conversion formula used and its reference."
+    },
+    "justification": {
+      "type": "string",
+      "description": "Justification for the effect size estimate used in the power analysis.",
       "enum": [
         "previous study",
         "meta-analysis",
@@ -536,17 +641,27 @@ Box 10.1: JSON Schema representation of the `effect_size_justification` property
     "reference": {
       "type": "string",
       "description": "Reference to the study, meta-analysis, or other source used to justify the effect size estimate."
-    },
-    "description": {
-      "type": "string",
-      "description": "Additional explanation about how the effect size was selected or calculated. For example, researchers may average effect sizes from multiple studies, use a bias-adjusted effect size or estimate an interaction effect from a independent two-group study design."
     }
+}
+}
   },
   "required": [
-    "method"
+    "metric",
+    "magnitude"
   ]
 }
 ```
+
+<!-- reference should probably be an array -->
+<!-- if metric is an enum type, does that require a second metric_other free text for things you haven't covered? -->
+
+The source of the effect size is important for interpreting a power analysis. There are six common approaches that researchers use to justify the effect size of interest in a power analysis: effect sizes from previous studies, meta-analyses, pilot studies, Cohen's *d* thresholds, field-specific thresholds, and the smallest effect size of interest (SESOI) [@lakens2022]. Reporting this information again goes beyond the statistical properties of a power analysis, but is essential when evaluate whether the sample size justification is valid. We therefore think that in addition to reporting how the effect size was determined, researchers should provide a justification for why this effect size was used in the power analysis.
+
+This information is especially important to be able to detect common problems with the choice of an effect size of interest in a priori power analyses. When effect sizes are derived from previous studies or meta-analyses, researchers should explain that the effect is sufficiently similar to the planned study, as studies might differ in the population, study design, manipulation, intervention, or even outcome measures. Furthermore, researchers should reflect on the (possibly large) uncertainty in the effect size estimate of the original study. This is also true if the effect size comes from a pilot study that the researchers performed themselves.
+
+Instead of using an empirically observed effect size for the power analysis, researchers may rely on Cohen's *d* thresholds for small, medium, and large effects, or field-specific benchmarks. This practice can be problematic because it uses general benchmarks to design a specific study that is likely not similar to the general study in a field. Consequently, choosing an effect size solely on the basis of Cohen's *d* thresholds or other field-specific benchmarks may overlook the contextual factors that determine whether the effect size is appropriate for the planned study [@primbs_2022].
+
+A better approach is to justify the effect size based on a smallest effect size of interest (SESOI), which specifies the effect a researcher does not want to miss, either because it is considered theoretically or practically meaningful for the research question. Regardless of the justification for the effect size is used to compute power, it should not simply be stated, but researchers should justify why it is a relevant effect size to design the study around.
 
 ### Sample size
 
@@ -592,37 +707,6 @@ Box 12.1: JSON Schema representation of the `power` property.
     }
 ```
 
-### Alpha
-
-Although 0.05 is commonly used as a default alpha level in hypothesis tests, the alpha level should be reported because it determines the threshold for statistical significance and directly affects the power of a test. Reporting the alpha level also allows peers to evaluate whether it matches the alpha level used in the study. For example, a study may adjust the alpha level to account for multiple comparisons in the results section, but use a different alpha level in the power analysis. As corrections for multiple comparisons lower the alpha level, the also lower the statistical power of the test. To facilitate machine readability and automated extraction, the alpha level should be reported as a numeric value between 0 and 1 (e.g., 0.05 rather than 5%). The justification property allows researchers to provide a justification explaining the rationale for this choice [@lakens_justify_2018], such as adjustments for multiple comparisons. \[**Nice - should we say the same for power? Also justify it?**\]
-
-Box 13.1: JSON Schema representation of the `alpha` property.
-
-``` json
- "alpha": {
-  "type": "object",
-  "description": "Type I error rate selected for the statistical test.",
-  "additionalProperties": false,
-  "properties": {
-    "value": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1,
-      "description": "Type I error rate selected for the analysis."
-    },
-    "justification": {
-      "type": "string",
-      "description": "Explanation of the rationale for selecting the alpha level. For example, researchers may adjust the alpha level to account for multiple comparisons."
-    }
-  },
-  "required": [
-    "value"
-  ]
-}
-```
-
-Box 13.2: Example JSON representation of the `alpha` property.
-
 ### Software
 
 The software used to conduct the power analysis should be reported to allow peers to reproduce the analysis using the exact same software, and where relevant, the packages package used (e.g., the specific R package). Different software packages can return slightly different calculations for the same settings. Researchers should also provide a link to the script, notebook, or other file that contains the code used to perform the power analysis. The link is preferably a Digital Object Identifier (DOI) that links to a file in a stable data repository. If the software used is point-and-click, researchers can link to a screenshot (for example on Figshare).
@@ -667,7 +751,7 @@ Box 14.1: JSON Schema representation of the `software` property.
 
 Standardizing the way information is reported in scientific articles has benefits beyond improving the transparency of individual power analyses. When information is consistently structured across articles, automated tools can more reliably extract and organize reported information.
 
-The proposed standardized reporting and schema represents an initial step toward a more transparent and clear representation of power analyses by imposing a consistent structure on the information required to evaluate and reproduce power analyses, while also facilitating information extraction using rule-based automated tools.
+The proposed standardised reporting and schema represents an initial step toward a more transparent and clear representation of power analyses by imposing a consistent structure on the information required to evaluate and reproduce power analyses, while also facilitating information extraction using rule-based automated tools.
 
 The current version focuses on commonly used statistical tests, including correlations, *t*-tests, and *F*-tests. Extending the standard to accommodate more complex analytic approaches, such as power analyses for mixed-effects models or simulation-based power analyses, will require identifying additional parameters and reporting requirements. Developing a comprehensive standard that covers the diversity of power analysis approaches used across disciplines will therefore require a community effort involving researchers and other stakeholders, such as journals. Such collaborative development can ensure that future extensions of the schema reflect the needs of different research communities while maintaining a consistent structure that supports both human interpretation and automated extraction. Future developments could also explore workflows in which software generates machine-readable representations directly, reducing the need for manual data entry while preserving the advantages of structured reporting.
 
