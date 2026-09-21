@@ -1,0 +1,109 @@
+{
+  "name": "Simple Example",
+  "hypotheses": [{
+    "id": "H1",
+    "description": "...",
+    "criteria": [{
+        "id": "C1",
+        "analysis_id": "A1",
+        "result": "p.value",
+        "operator": "<",
+        "comparator": 0.05
+    }],
+    "corroboration": {
+      "description": "...",
+      "evaluation": "C1"
+    }
+  }],
+  "analyses": [{
+    "id": "A1",
+    "code": "t.test(score ~ condition, data = data1)",
+    "software": "R version 4.6.0 (2026-04-24)"
+  }],
+  "data": [{
+    "id": "data1",
+    "codebook": {
+      "@context": "https://schema.org/",
+      "@type": "Dataset",
+      "name": "data1",
+      "schemaVersion": "Psych-DS 1.5.1",
+      "variableMeasured": [
+        {
+          "@type": "PropertyValue",
+          "name": "score",
+          "description": "Score",
+          "dataType": "numeric"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "condition",
+          "description": "Experimental condition",
+          "dataType": "factor",
+          "valuePattern": "ctl|exp"
+        }
+      ]
+    },
+    "generating_model": [{
+      "software": "R version 4.6.0 (2026-04-24)",
+      "code": {
+        "package": "faux",
+        "function": "sim_design",
+        "arguments" : {
+          "n": {
+            "$ref": "#/power_analyses/0/sample_size/n"
+          }, 
+          "within": {
+            "condition": ["ctl", "exp"]
+          }, 
+          "mu": {
+            "ctl": 0,
+            "exp": {
+              "$ref": "#/power_analyses/0/effect_size/magnitude"
+            }
+          },
+          "sd": 1,
+          "r": 0.5,
+          "id": "id", 
+          "dv": "score", 
+          "long": true
+        }
+      }
+    }]
+  }],
+  "power_analyses": [{
+    "id": "P1",
+    "hypothesis_id": "H1",
+    "calculated": "power",
+    "power": {
+      "power": 0.6336178
+    }
+    "sample_size": {
+      "n": 100,
+      "justification": {
+        "description": "avaliable resources"
+      }
+    },
+    "effect_size": {
+      "metric": "d",
+      "magnitude": 0.2,
+      "justification": {
+        "description": "previous study",
+        "reference": "https://doi.org/example/251524592097094"
+      }
+    },
+    "code": {
+      "script": "./power.R",
+      "text": "pwr::pwr.t.test(n = 100, d = 0.2, type = 'paired', alternative = 'greater')$power",
+      "package": "pwr",
+      "function": "pwr.t.test",
+      "arguments": {
+        "n": { "$ref": "#/power_analyses/0/sample_size/n" },
+        "d": { "$ref": "#/power_analyses/0/effect_size/magnitude" },
+        "type": "paired",
+        "sig.level": "0.05",
+        "alternative": "greater"
+      },
+      "return": ".Last.value$power"
+    }
+  }]
+}

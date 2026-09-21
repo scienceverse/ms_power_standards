@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://scienceverse.org/schema/power.json",
+  "title": "Power",
+  "description": "A power analysis",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier used to link the power analysis to corresponding hypotheses and statistical tests."
+    },
+    "target": {
+      "type": "string",
+      "description": "The parameter calculated by the power analysis.",
+      "enum": [
+        "power",
+        "sample_size",
+        "effect_size
+      ]
+    },
+    "power": {
+      "type": "object",
+      "description": "Planned or achieved statistical power."
+      "properties": {
+        "power": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+        },
+        "justification": "#/$defs/justification"
+      }
+    },
+    "sample_size": {
+      "type": "object",
+      "description": "Sample size information.",
+      "properties": {
+        "total": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "justification": "#/$defs/justification"
+      }
+    },
+    "effect_size": {
+      "type": "object",
+      "description": "The metric and magnitude of the effect size used in the power analysis.",
+      "properties": {
+        "metric": { "type": "string" },
+        "magnitude": { "type": "number" },
+        "description": {
+          "type": "string",
+          "description": "Additional information about how the effect size was obtained. For example, average effect sizes from multiple studies, use a bias-adjusted effect size or estimate an interaction effect from a independent two-group study design. If the effect size was converted from another metric, report the conversion formula used and its reference."
+        },
+        "justification": "#/$defs/justification"
+      }
+    },
+    "test": {
+      "type": "object",
+      "properties": {
+        "target_effect": { "type": "string" },
+        "parameters": { "type": "object" },
+        "decision_criterion": {
+          "alpha": {
+            "type": "number",
+            "min": 0,
+            "max": 1
+          },
+          "justification": "#/def/justification"
+        }
+      }
+    },
+    "software": {
+      "type": "object",
+      "description": "Software used for the power analysis.",
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "reference": {
+          "type": "string",
+          "format": "uri"
+        }
+        "file_location": {
+          "type": "string",
+          "format": "uri",
+          "description": "Link to the repository, file, or other online location containing the code used for the power analysis."
+        }
+      }
+    }
+  },
+  
+  "$defs": {
+    "justification": {
+      "type": "object",
+      "description": "The justification for choosing a specific parameter.",
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "The narrative justification"
+        },
+        "reference": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": "Relevant references"
+        }
+      }
+    }
+  }
+}
