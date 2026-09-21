@@ -1,0 +1,128 @@
+{
+  "hypotheses": [{
+    "id": "H1",
+    "description" : "The effect of length will be positive, and larger in the experimental condition than in the control condition.",
+    "criteria": [
+      {
+        "id": "C_length",
+        "analysis_id": "A1",
+        "result": "`Pr(>F)`[[2]]",
+        "operator": "<",
+        "comparator": 0.025
+      },
+      {
+        "id": "C_ixn",
+        "analysis_id": "A1",
+        "result": "`Pr(>F)`[[3]]",
+        "operator": "<",
+        "comparator": 0.025
+      }
+    ],
+    "corroboration": {
+      "description": "The main effect of length is significant and the interaction between condition and length is significant.",
+      "justification": {
+          "description": "Bonferroni correction"
+      },
+      "evaluation": "C_length & C_ixn"
+    }
+  }],
+  
+  "analyses": [{
+    "id": "A1",
+    "code": "afex::aov_ez(id = 'id', within = c('condition', 'length'), dv = 'score', data = data1)$anova_table",
+    "software": "R version 4.6.0 (2026-04-24)",
+    "metadata": {
+      "model": "conditon*length"
+    }
+  }],
+    
+  "data": [{
+    "id": "data1",
+    "codebook": {
+      "@context": "https://schema.org/",
+      "@type": "Dataset",
+      "name": "data1",
+      "schemaVersion": "Psych-DS 1.5.1",
+      "variableMeasured": [
+        {
+          "@type": "PropertyValue",
+          "name": "id",
+          "description": "Unique participant ID",
+          "dataType": "string"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "score",
+          "description": "Score",
+          "dataType": "numeric"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "condition",
+          "description": "Experimental condition",
+          "dataType": "factor",
+          "valuePattern": "ctl|exp"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "length",
+          "description": "Length of the study",
+          "dataType": "factor",
+          "valuePattern": "short|long"
+        }
+      ]
+    },
+    "generating_model": {
+      "data_id": "data1",
+      "software": "R version 4.6.0 (2026-04-24)",
+      "function": "faux::sim_design",
+      "arguments" : {
+        "n": 100, 
+        "within": {
+          "condition": ["ctl", "exp"],
+          "length": ["short", "long"]
+        }, 
+        "mu": {
+          "ctl_short": 0,
+          "ctl_long": 0.25,
+          "exp_short": 0,
+          "exp_long": 0.50
+        },
+        "sd": 1,
+        "r": 0.5,
+        "id": "id", 
+        "dv": "score", 
+        "long": true
+      }
+    }
+  }],
+  
+  "power_analyses": [{
+    "id": "P1",
+    "hypothesis_id": "H1",
+    "calculated": "sample_size",
+    "power": {
+      "power": 0.9,
+      "justification": {
+        "description": "journal requirement"
+      }
+    }
+    "sample_size": {
+      "n": 186
+    },
+    "effect_size": {
+      "metric": "f",
+      "magnitude": 0.12,
+      "justification": {
+        "description": "previous study",
+        "reference": "https://doi.org/example/251524592097094"
+      }
+    },
+    "software": {
+      "name": "G*Power",
+      "version": "3.1.9.6 (Mac)",
+      "reference": "https://doi.org/10.3758/BF03193146"
+      "file_location":"https://EXAMPLE"
+    }
+  }]
+}
