@@ -1,0 +1,99 @@
+---
+title: "power"
+format: html
+---
+
+```{r}
+# remotes::install_github("scienceverse/scienceverse")
+library(scienceverse)
+library(dplyr)
+library(tibble)
+library(marginaleffects)
+```
+
+```{r}
+study <- study("Power") |> 
+  add_hypothesis(
+    id = "H1",
+    description = "The intervention will be superior to the control condition on a primary outcome"
+    )
+```
+
+```{r}
+study <- add_sim_data(
+  study,
+  data_id = "simulated_data_power",
+  within = list(time = c("pre", "y")),
+  between = list(group = c(int = "intervention", con = "control")),
+  mu = data.frame(
+    con = c(5, 5),
+    int = c(5, 6),
+    row.names = c("pre", "y")
+    ),
+  n = 100,
+  sd = 3,
+  r = 0.7
+  ) 
+```
+
+```{r}
+study <- add_analysis(
+    study,
+    id = "A1",
+    software = R.version.string,
+    code = {
+    simulated_data_power$group <- relevel(simulated_data_power$group, 
+                                          ref = "con")
+    
+    mod <- lm(y ~ group + pre, simulated_data_power)
+    
+    res <- hypotheses(mod, "groupint <= 0")
+    
+    tibble(
+      estimate = res$estimate,
+      lower_ci = res$conf.low,
+      upper_ci = res$conf.high,
+      p_value  = res$p.value
+    )
+  },
+  description = "ANCOVA with post-intervention outcome (y) as the dependent variable, baseline measurement (pre) as a covariate, and group as a predictor. The posthoc comparison tests whether the, adjusted group difference is greater than zero."
+  )
+```
+
+```{r}
+study <- add_criterion(
+  study,
+  id = "C1",
+  result = "p_value",
+  operator = "<",
+  comparator = 0.05,
+  analysis_id = "A1",
+  hypothesis_id = "H1"
+  ) 
+```
+
+
+```{r}
+study <- add_eval(
+  study,
+  "corroboration",
+  evaluation = "C1",
+  description = "The hypothesis is corroborated if the p-value from the one-sided test is smaller than 0.05"
+  )
+```
+
+```{r}
+set.seed(8675309)
+power <- study_power(study, rep = 1000)
+```
+
+
+```{r}
+res <- get_power(power, values = TRUE)
+str(res$power)
+```
+
+
+```{r}
+study_save(study, "power.json", "json")
+```
