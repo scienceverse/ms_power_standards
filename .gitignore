@@ -7,4 +7,4 @@ schema.json
 
 /.quarto/
 **/*.quarto_ipynb
-output/_extentions
+docs/_extentions
