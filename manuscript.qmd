@@ -524,7 +524,9 @@ pretty_json(a[[1]][include])
 ```
 :::
 
-Once data have been collected and added, an output object also contains the computed statistical results (@exm-results), such as the test statistic, degrees of freedom, *p*-value, effect estimate, and confidence interval (CI), where applicable.
+<!--# CM: Ask Lisa to fix the the code filed from the above code chunk -->
+
+Once data have been collected and added, the output object also contains the computed statistical results (@exm-results), such as the test statistic, degrees of freedom, *p*-value, effect estimate, and confidence interval (CI), where applicable.
 
 ```{r}
 #| include: false
@@ -688,9 +690,9 @@ To sum up, we have illustrated how power analyses can be represented as machine-
 
 # Conclusion
 
-The proposed standardized reporting represents an initial step toward a more transparent and auditable representation of power analyses by imposing a more consistent structure on the information required to evaluate and reproduce power analyses, while also facilitating information extraction using rule-based automated tools.
+Making power analyses machine-readable would make the link between the hypothesis being tested and the statistical test used to evaluate it explciit, while also improves transparency. However, implementing this approach requires some training and technical expertise. There, a more practical short-term solution may be to adopt the proposed standardized reporting guidelines. These represent an initial step toward a more transparent and auditable representation of power analyses by imposing a more consistent structure on the information required to evaluate and reproduce power analyses, while also facilitating information extraction using rule-based automated tools.
 
-This is relatively straightforward for commonly used statistical tests, such as correlations, *t*-tests, and *F*-tests. Extending the standard to accommodate more complex analytic approaches, such as power analyses for mixed-effects models or simulation-based power analyses, will require identifying additional parameters and reporting requirements. Developing a comprehensive standard that covers the diversity of power analysis approaches used across disciplines will therefore require a community effort involving researchers, editors and reviewers. Such collaborative development can ensure that future extensions of the schema reflect the needs of different research communities while maintaining a consistent structure that supports both human interpretation and automated extraction.
+Developing standardized reporting is relatively straightforward for commonly used statistical tests, such as correlations, *t*-tests, and *F*-tests. Extending the standard to accommodate more complex analytic approaches, such as power analyses for mixed-effects models or simulation-based power analyses, will require identifying additional parameters and reporting requirements. Developing a comprehensive standard that covers the diversity of power analysis approaches used across disciplines will therefore require a community effort involving researchers, editors and reviewers. Such collaborative development can ensure that future extensions of the schema reflect the needs of different research communities while maintaining a consistent structure that supports both human interpretation and automated extraction.
 
 Future work should also explore how to standardize the reporting of justifications for the parameters used in power analyses. These justifications are essential for evaluating the appropriateness of the parameters [e.g., @lakens_justify_2018; @lakens_2022]. Of particular importance is the justification of the effect size, which can be based on different approaches, such as a previous study, meta-analysis or the smallest effect size of interest (SESOI). When effect sizes are derived from a previous study or meta-analysis, researchers should explain why the chosen estimate provides a reasonable basis for the expected effect in their study. This requires considering the extent to which the study informing the effect size estimate is comparable to the planned study. For example, differences in study populations, research designs, interventions and measures may limit the extent to which the reported effect size can be used to inform a new study. Ignoring these differences can result in effect size estimates that are poorly justified.
 
